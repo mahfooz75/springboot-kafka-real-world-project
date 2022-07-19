@@ -9,3 +9,19 @@ spring:
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  datasource:
+    url: jdbc:mysql://localhost:3306/wikimedia?createDatabaseIfNotExist=true
+    username: root
+    password: Password@1
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        show_sql: true
+        use_sql_comment: true
+        format_sql: true
+        ddl-auto: update
+        jdbc:
+          batch_size: 20

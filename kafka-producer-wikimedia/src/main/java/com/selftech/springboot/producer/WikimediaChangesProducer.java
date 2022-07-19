@@ -16,7 +16,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 @Slf4j
 public class WikimediaChangesProducer {
 
-    private KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     public WikimediaChangesProducer(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
@@ -26,8 +26,12 @@ public class WikimediaChangesProducer {
         // TO READ REAL TIME STREAM DATA WE USE EVENT SOURCE
         EventHandler eventHandler = new WikimediaChangesHandler(kafkaTemplate, KafkaConstant.WIKIMEDIA_RECENTCHANGE_TOPIC);
         EventSource.Builder builder = new EventSource.Builder(eventHandler, URI.create(KafkaConstant.WIKIMEDIA_STREAM_URL));
-        EventSource eventSource = builder.build();
-        eventSource.start();
-        MINUTES.sleep(10);
+        try (EventSource eventSource = builder.build()) {
+            eventSource.start();
+            MINUTES.sleep(10);
+        } catch (InterruptedException ex) {
+            log.info("InterruptedException-> {}", ex.getMessage());
+            throw new InterruptedException(ex.getMessage());
+        }
     }
 }

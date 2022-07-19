@@ -8,8 +8,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 @Slf4j
 public class WikimediaChangesHandler implements EventHandler {
 
-    private KafkaTemplate<String, String> kafkaTemplate;
-    private String topic;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final String topic;
 
     public WikimediaChangesHandler(KafkaTemplate<String, String> kafkaTemplate, String topic) {
         this.kafkaTemplate = kafkaTemplate;
@@ -18,23 +18,39 @@ public class WikimediaChangesHandler implements EventHandler {
 
     @Override
     public void onOpen() throws Exception {
-
+        try {
+            log.info("Opening");
+        } catch (Exception e) {
+            throw new Exception("Exception occurred while opening::" + e.getMessage());
+        }
     }
 
     @Override
     public void onClosed() throws Exception {
-
+        try {
+            log.info("Closing");
+        } catch (Exception e) {
+            throw new Exception("Exception occurred while closing::" + e.getMessage());
+        }
     }
 
     @Override
     public void onMessage(String s, MessageEvent messageEvent) throws Exception {
-        log.info(String.format("Event data -> %s", messageEvent.getData()));
-        kafkaTemplate.send(topic, messageEvent.getData());
+        try {
+            log.info(String.format("Event data -> %s", messageEvent.getData()));
+            kafkaTemplate.send(topic, messageEvent.getData());
+        } catch (Exception e) {
+            throw new Exception("Exception occurred while processing message::" + e.getMessage());
+        }
     }
 
     @Override
     public void onComment(String s) throws Exception {
-
+        try {
+            log.info("comment:: {}", s);
+        } catch (Exception e) {
+            throw new Exception("Exception occurred on comment::" + e.getMessage());
+        }
     }
 
     @Override
